@@ -19,6 +19,7 @@ package com.st169656.ripetizioni.model;
 public class Model
 	{
 		private static Model instance = new Model ();
+		private User user = null;
 
 		private Model()
 			{
@@ -28,5 +29,15 @@ public class Model
 		public static Model getInstance ()
 			{
 				return instance;
+			}
+
+		public void setUser (User user)
+			{
+				this.user = user;
+			}
+
+		public User getUser ()
+			{
+				return user;
 			}
 	}

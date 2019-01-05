@@ -16,19 +16,15 @@
 package com.st169656.ripetizioni;
 
 import com.google.gson.Gson;
-import com.st169656.ripetizioni.model.Course;
-import com.st169656.ripetizioni.model.Teacher;
-import com.st169656.ripetizioni.model.User;
+import com.google.gson.reflect.TypeToken;
+import com.st169656.ripetizioni.model.Booking;
+import com.st169656.ripetizioni.model.Model;
 import com.st169656.ripetizioni.model.wrapper.HUC;
 import com.st169656.ripetizioni.model.wrapper.Response;
 import com.st169656.ripetizioni.model.wrapper.UserCredential;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +32,7 @@ import java.util.concurrent.Future;
 
 public class HttpClient
 	{
-		private User requestingUser = null;
+		private Model model = Model.getInstance ();
 		private static final String BASE_URL = "http://192.168.1.67:8080/api";
 		private static ExecutorService threadPool = Executors.newFixedThreadPool (5);
 
@@ -45,7 +41,7 @@ public class HttpClient
 
 			}
 
-		public Future<Response> request (Callable r)
+		public Future <Response> request (Callable r)
 			{
 				return threadPool.submit (r);
 			}
@@ -59,27 +55,62 @@ public class HttpClient
 				};
 			}
 
-		public Callable <Response> newTeacher (Teacher t)
+		public Callable <Boolean> logout ()
 			{
 				return () ->
 				{
-					if (this.requestingUser == null) return null;
-					HUC huc = new HUC (BASE_URL+"?method=newTeacher&by_user="+requestingUser.getId ());
-					return huc.post (new Gson ().toJson (t));
+					HUC huc = new HUC (BASE_URL + "method=logout&by_user=" + model.getUser ().getId ());
+					String response = huc.rawGet ();
+					return new Gson ().fromJson (response, Boolean.class);
 				};
 			}
 
-		public Callable <Response> newCourse (Course c)
+		public Callable <Response> book (int booking_id)
 			{
 				return () ->
 				{
-					if (this.requestingUser == null) return null;
-					HUC huc = new HUC (BASE_URL+"?method=newCourse&by_user="+requestingUser.getId ());
-					return huc.post (new Gson ().toJson (c));
+					HUC huc = new HUC (BASE_URL + "method=book&by_user=" + model.getUser ().getId ()
+														 + "&booking_id=" + booking_id);
+					return huc.get ();
 				};
 			}
 
+		public Callable <Response> unbook (int booking_id)
+			{
+				return () ->
+				{
+					HUC huc = new HUC (BASE_URL + "method=unbook&by_user=" + model.getUser ().getId ()
+														 + "&booking_id=" + booking_id);
+					return huc.get ();
+				};
+			}
 
+		public Callable <ArrayList <Booking>> getBookings ()
+			{
+				return () ->
+				{
+					HUC huc = new HUC (BASE_URL + "method=getBookings&by_user=" + model.getUser ().getId ());
+					String res = huc.rawGet ();
+					Type type = new TypeToken <ArrayList <Booking>> () {}.getType ();
+					return new Gson ().fromJson (res, type);
+				};
+			}
 
+		public Callable <Response> getIncomingBookings ()
+			{
+				return () ->
+				{
+					HUC huc = new HUC (BASE_URL + "method=getIncomingBookings&id=" + model.getUser ().getId ());
+					return huc.get ();
+				};
+			}
 
+		public Callable <Response> getPastBookings ()
+			{
+				return () ->
+				{
+					HUC huc = new HUC (BASE_URL + "method=getPastBookings&id=" + model.getUser ().getId ());
+					return huc.get ();
+				};
+			}
 	}

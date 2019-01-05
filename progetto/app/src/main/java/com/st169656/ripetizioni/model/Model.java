@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Luca D'Amato
+ * Copyright 2019 Luca D'Amato
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,16 @@
 
 package com.st169656.ripetizioni.model;
 
-import java.util.ArrayList;
-import com.st169656.ripetizioni.model.Booking;
-
-public class FakeModel
+public class Model
 	{
+		private static Model instance = new Model ();
 
-		private static FakeModel instance = new FakeModel ();
-
-		private FakeModel()
+		private Model()
 			{
 
 			}
 
-		public ArrayList<Booking> getFakeBookings()
-			{
-				return new ArrayList <> ();
-			}
-
-		public static FakeModel getInstance ()
+		public static Model getInstance ()
 			{
 				return instance;
 			}

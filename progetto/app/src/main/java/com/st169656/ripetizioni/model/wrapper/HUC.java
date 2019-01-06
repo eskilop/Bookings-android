@@ -16,9 +16,6 @@
 
 package com.st169656.ripetizioni.model.wrapper;
 
-import android.util.Log;
-import android.util.Pair;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -43,7 +40,7 @@ public class HUC
 					}
 				catch (MalformedURLException mue)
 					{
-
+						mue.printStackTrace ();
 					}
 			}
 
@@ -62,7 +59,7 @@ public class HUC
 					}
 				catch (IOException ioe)
 					{
-
+						ioe.printStackTrace ();
 					}
 				finally
 					{
@@ -93,7 +90,7 @@ public class HUC
 					}
 				catch (IOException ioe)
 					{
-
+						ioe.printStackTrace ();
 					}
 				finally
 					{

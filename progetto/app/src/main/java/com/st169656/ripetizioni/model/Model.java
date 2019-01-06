@@ -16,14 +16,17 @@
 
 package com.st169656.ripetizioni.model;
 
+import java.util.ArrayList;
+
 public class Model
 	{
 		private static Model instance = new Model ();
 		private User user = null;
+		private ArrayList <Booking> bookings;
+		private ArrayList <Booking> selected = new ArrayList <> ();
 
-		private Model()
+		private Model ()
 			{
-
 			}
 
 		public static Model getInstance ()
@@ -36,8 +39,28 @@ public class Model
 				this.user = user;
 			}
 
+		public void setBookings (ArrayList <Booking> bookings)
+			{
+				this.bookings = bookings;
+			}
+
 		public User getUser ()
 			{
-				return user;
+				return this.user;
+			}
+
+		public ArrayList <Booking> getBookings ()
+			{
+				return this.bookings;
+			}
+
+		public ArrayList <Booking> getSelected ()
+			{
+				return selected;
+			}
+
+		public void selectBooking (Booking b)
+			{
+				selected.add (b);
 			}
 	}

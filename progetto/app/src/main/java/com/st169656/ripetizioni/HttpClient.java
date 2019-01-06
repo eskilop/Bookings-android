@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
+import com.st169656.ripetizioni.model.User;
 import com.st169656.ripetizioni.model.wrapper.HUC;
 import com.st169656.ripetizioni.model.wrapper.Response;
 import com.st169656.ripetizioni.model.wrapper.UserCredential;
@@ -33,7 +34,7 @@ import java.util.concurrent.Future;
 public class HttpClient
 	{
 		private Model model = Model.getInstance ();
-		private static final String BASE_URL = "http://192.168.1.67:8080/api";
+		private static final String BASE_URL = "http://192.168.1.71:8080/api?";
 		private static ExecutorService threadPool = Executors.newFixedThreadPool (5);
 
 		public HttpClient ()
@@ -41,7 +42,7 @@ public class HttpClient
 
 			}
 
-		public Future <Response> request (Callable r)
+		public <T> Future <T> request (Callable r)
 			{
 				return threadPool.submit (r);
 			}
@@ -50,8 +51,10 @@ public class HttpClient
 			{
 				return () ->
 				{
-					HUC huc = new HUC (BASE_URL + "?method=login");
-					return huc.post (new Gson ().toJson (u));
+					HUC huc = new HUC (BASE_URL + "method=login");
+					Response result = huc.post (new Gson ().toJson (u));
+					model.setUser (result.toObj (new TypeToken<User> (){}.getType ()));
+					return result;
 				};
 			}
 

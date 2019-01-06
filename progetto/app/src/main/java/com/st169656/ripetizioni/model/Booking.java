@@ -17,6 +17,7 @@
 package com.st169656.ripetizioni.model;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 public class Booking
   {
@@ -58,4 +59,33 @@ public class Booking
         return booking_state;
       }
 
+    @Override
+    public boolean equals (Object o)
+      {
+        if (this == o) return true;
+        if (! (o instanceof Booking)) return false;
+        Booking booking = (Booking) o;
+        return booking_id == booking.booking_id &&
+               Objects.equals (booking_from, booking.booking_from) &&
+               Objects.equals (booking_date, booking.booking_date) &&
+               Objects.equals (booking_state, booking.booking_state);
+      }
+
+    @Override
+    public int hashCode ()
+      {
+
+        return Objects.hash (booking_id, booking_from, booking_date, booking_state);
+      }
+
+    @Override
+    public String toString ()
+      {
+        return "Booking{" +
+               "booking_id=" + booking_id +
+               ", booking_from=" + booking_from +
+               ", booking_date=" + booking_date +
+               ", booking_state=" + booking_state +
+               '}';
+      }
   }

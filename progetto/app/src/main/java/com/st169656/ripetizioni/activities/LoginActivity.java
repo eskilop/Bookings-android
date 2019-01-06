@@ -43,7 +43,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.st169656.ripetizioni.R;
-import com.st169656.ripetizioni.tasks.UserLoginTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +70,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks 
 		/**
 		 * Keep track of the login task to ensure we can cancel it if requested.
 		 */
-		private UserLoginTask mAuthTask = null;
 
 		// UI references.
 		private AutoCompleteTextView mEmailView;
@@ -181,10 +179,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks 
 		 */
 		private void attemptLogin ()
 			{
-				if (mAuthTask != null)
-					{
-						return;
-					}
 
 				// Reset errors.
 				mEmailView.setError (null);
@@ -230,8 +224,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks 
 						// Show a progress spinner, and kick off a background task to
 						// perform the user login attempt.
 						showProgress (true);
-						mAuthTask = new UserLoginTask (email, password);
-						mAuthTask.execute ((Void) null);
 					}
 			}
 

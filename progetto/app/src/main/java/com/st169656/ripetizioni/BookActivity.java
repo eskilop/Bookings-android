@@ -51,6 +51,10 @@ public class BookActivity extends AppCompatActivity
 				findViewById (R.id.floatingActionButton).setOnClickListener (
 						v ->
 						{
+							for (int i : bookingsManager.getSelectedPositions ())
+								{
+									rv.getChildAt (i).setBackgroundColor (BookActivity.this.getResources ().getColor (R.color.colorTransparent));
+								}
 							bookingsManager.book ();
 							rv.getAdapter ().notifyDataSetChanged ();
 						});

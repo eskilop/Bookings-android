@@ -16,12 +16,9 @@
 
 package com.st169656.ripetizioni;
 
-import android.util.Log;
-
 import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.History;
 import com.st169656.ripetizioni.model.wrapper.HistoryElementResponse;
-import com.st169656.ripetizioni.model.wrapper.Response;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -47,6 +44,17 @@ public class BookingsManager
 			{
 				integralBookings.addAll (b);
 				bookings.addAll (b);
+				bookings.sort (Booking::compareTo);
+			}
+
+		public ArrayList<Integer> getSelectedPositions()
+			{
+				ArrayList<Integer> i = new ArrayList <> ();
+				for (Booking b : selected)
+					{
+						i.add (bookings.indexOf (b));
+					}
+				return i;
 			}
 
 		public void loadIncoming(ArrayList<Booking> b)

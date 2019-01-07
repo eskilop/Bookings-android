@@ -19,7 +19,7 @@ package com.st169656.ripetizioni.model;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public class Booking
+public class Booking implements Comparable<Booking>
   {
     private int booking_id;
     private Teacher booking_from;
@@ -87,5 +87,20 @@ public class Booking
                ", booking_date=" + booking_date +
                ", booking_state=" + booking_state +
                '}';
+      }
+
+    @Override
+    public int compareTo (Booking o)
+      {
+        if (this.getDate ().equals (o.getDate ()))
+          return 0;
+        else
+          {
+            boolean b = this.getDate ().after (o.getDate ());
+            if (b)
+              return +1;
+            else
+              return -1;
+          }
       }
   }

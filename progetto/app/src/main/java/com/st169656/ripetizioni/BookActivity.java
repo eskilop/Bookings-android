@@ -75,6 +75,7 @@ public class BookActivity extends AppCompatActivity
 			{
 				super.onPostResume ();
 				rv.getAdapter ().notifyDataSetChanged ();
+				Model.getInstance ().getBookings ().sort (Booking::compareTo);
 			}
 
 		@Override

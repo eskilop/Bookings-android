@@ -132,19 +132,23 @@ public class LoginActivity extends AppCompatActivity
 						try
 							{
 								Response r = (Response) hc.request (hc.login (new UserCredential (username, password))).get ();
-								showProgress (!r.getKey ());
-								r.dispatch (LoginActivity.this);
-								Model.getInstance ().setUser (r.toObj (User.class));
-								SharedPreferences.Editor editor = getSharedPreferences ("usr_pref", MODE_PRIVATE).edit ();
-								editor.putString ("user", r.getValue ());
-								editor.apply ();
-								startActivity (new Intent (LoginActivity.this, BookActivity.class));
-								finish ();
+								//r.dispatch (LoginActivity.this);
+								if (r.getKey ())
+									{
+										Model.getInstance ().setUser (r.toObj (User.class));
+										SharedPreferences.Editor editor = getSharedPreferences ("usr_pref", MODE_PRIVATE).edit ();
+										editor.putString ("user", r.getValue ());
+										editor.apply ();
+										startActivity (new Intent (LoginActivity.this, BookActivity.class));
+										finish ();
+									}
+								else r.dispatch (LoginActivity.this);
 							}
 						catch (ExecutionException | InterruptedException e)
 							{
 								e.printStackTrace ();
 							}
+						showProgress (false);
 					}
 			}
 

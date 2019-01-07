@@ -19,25 +19,24 @@ package com.st169656.ripetizioni.model;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 
+import com.st169656.ripetizioni.BookingsManager;
 import com.st169656.ripetizioni.HttpClient;
 import com.st169656.ripetizioni.model.wrapper.BookingResponse;
 import com.st169656.ripetizioni.model.wrapper.HistoryResponse;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 public class Model
 	{
 		private static Model instance = new Model ();
-		private User user = null;
-		private ArrayList <Booking> bookings = new ArrayList <> ();
-		private ArrayList <Booking> incomingBookings = new ArrayList <> ();
-		private ArrayList <History> pastBookings = new ArrayList <> ();
-		private ArrayList <Booking> selected = new ArrayList <> ();
+		private User user;
+		private static BookingsManager bookingsManager;
 
 		private Model ()
 			{
+				user = null;
+				bookingsManager = new BookingsManager ();
 			}
 
 		public static void loadBookings (RecyclerView rv)
@@ -51,7 +50,7 @@ public class Model
 							{
 								try
 									{
-										Model.getInstance ().getBookings ().addAll ((Collection <? extends Booking>) hc.request (hc.getBookings ()).get ());
+										bookingsManager.loadIntegral((ArrayList <Booking>) hc.request (hc.getBookings ()).get ());
 									}
 								catch (ExecutionException | InterruptedException e)
 									{
@@ -81,7 +80,8 @@ public class Model
 							{
 								try
 									{
-										Model.getInstance ().getIncomingBookings ().addAll (((BookingResponse) hc.request (hc.getIncomingBookings ()).get ()).getValue ());
+										bookingsManager.loadIncoming (((BookingResponse) hc.request (hc.getIncomingBookings ())
+																														.get ()).getValue ());
 									}
 								catch (ExecutionException | InterruptedException e)
 									{
@@ -111,7 +111,8 @@ public class Model
 							{
 								try
 									{
-										Model.getInstance ().getHistory ().addAll (((HistoryResponse) hc.request (hc.getPastBookings ()).get ()).getValue ());
+										bookingsManager.loadPast (((HistoryResponse) hc.request (hc.getPastBookings ()).get ())
+																		.getValue ());
 									}
 								catch (ExecutionException | InterruptedException e)
 									{
@@ -140,43 +141,13 @@ public class Model
 				this.user = user;
 			}
 
-		public void setBookings (ArrayList <Booking> bookings)
+		public BookingsManager getBookingsManager ()
 			{
-				this.bookings.addAll (bookings);
-			}
-
-		public void setIncomingBookings (ArrayList <Booking> bookings)
-			{
-				this.incomingBookings.addAll (bookings);
-			}
-
-		public void setHistory (ArrayList <History> histories)
-			{
-				this.pastBookings.addAll (histories);
-			}
-
-		public ArrayList <Booking> getIncomingBookings ()
-			{
-				return this.incomingBookings;
-			}
-
-		public ArrayList <History> getHistory ()
-			{
-				return this.pastBookings;
+				return bookingsManager;
 			}
 
 		public User getUser ()
 			{
 				return this.user;
-			}
-
-		public ArrayList <Booking> getBookings ()
-			{
-				return this.bookings;
-			}
-
-		public ArrayList <Booking> getSelected ()
-			{
-				return selected;
 			}
 	}

@@ -24,14 +24,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.st169656.ripetizioni.R;
+import com.st169656.ripetizioni.BookingsManager;
 import com.st169656.ripetizioni.activities.HistoryActivity;
 import com.st169656.ripetizioni.model.History;
 import com.st169656.ripetizioni.model.Model;
 
 public class HistoryAdapter extends RecyclerView.Adapter <HistoryAdapter.HistoryViewHolder>
 	{
-		LayoutInflater inflater;
-		Model model = Model.getInstance ();
+		BookingsManager bookingsManager = Model.getInstance ().getBookingsManager ();
 		HistoryActivity.RecyclerPairHolder rph;
 
 		public HistoryAdapter (HistoryActivity.RecyclerPairHolder rph)
@@ -77,16 +77,13 @@ public class HistoryAdapter extends RecyclerView.Adapter <HistoryAdapter.History
 		@Override
 		public void onBindViewHolder (@NonNull HistoryAdapter.HistoryViewHolder bookingsViewHolder, int position)
 			{
-				bookingsViewHolder.setTextFromElement (Model.getInstance ().getHistory ().get (position));
+				bookingsViewHolder.setTextFromElement (bookingsManager.historyAt (position));
 			}
 
 		@Override
 		public int getItemCount ()
 			{
-				if (model.getHistory () == null)
-					return 0;
-				else
-					return model.getHistory ().size ();
+				return bookingsManager.sizeOfHistory ();
 			}
 
 		@Override

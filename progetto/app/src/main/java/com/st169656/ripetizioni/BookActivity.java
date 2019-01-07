@@ -1,26 +1,21 @@
 package com.st169656.ripetizioni;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.gson.Gson;
 import com.st169656.ripetizioni.activities.HistoryActivity;
 import com.st169656.ripetizioni.activities.LoginActivity;
 import com.st169656.ripetizioni.adapters.BookingsAdapter;
-import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
 import com.st169656.ripetizioni.model.User;
-import com.st169656.ripetizioni.model.wrapper.Response;
-import com.st169656.ripetizioni.model.wrapper.UserCredential;
 
 import java.util.concurrent.ExecutionException;
 
@@ -30,7 +25,7 @@ public class BookActivity extends AppCompatActivity
 		MenuItem logout, history;
 		RecyclerView rv;
 		RecyclerView.LayoutManager layoutManager;
-		Model model = Model.getInstance ();
+		BookingsManager bookingsManager = Model.getInstance ().getBookingsManager ();
 
 		@Override
 		protected void onCreate (Bundle savedInstanceState)
@@ -40,33 +35,26 @@ public class BookActivity extends AppCompatActivity
 
 				setSupportActionBar (findViewById (R.id.toolbar));
 
+				Log.e ("inst", String.valueOf (Model.getInstance () == null));
+
 				rv = findViewById (R.id.bookings_list);
 				layoutManager = new GridLayoutManager (BookActivity.this, 3);
 				rv.setLayoutManager (layoutManager);
 				rv.setHasFixedSize (true);
 				rv.setAdapter (new BookingsAdapter ());
 
-				getUser ();
 				Model.loadBookings (rv);
-				Model.loadIncomingBookings (null);
-				Model.loadPastBookings (null);
-
+				if (getUser ())
+					{
+						Model.loadIncomingBookings (null);
+						Model.loadPastBookings (null);
+					}
 
 				findViewById (R.id.floatingActionButton).setOnClickListener (
 						v ->
 						{
-							HttpClient hc = new HttpClient ();
-							for (Booking booking : model.getSelected ())
-								{
-									int idx = model.getBookings ().indexOf (booking);
-									model.getBookings ().remove (booking);
-									model.getIncomingBookings ().add (booking);
-									rv.removeViewAt (idx);
-									rv.getAdapter ().notifyItemRemoved(idx);
-									rv.getAdapter ().notifyItemRangeChanged (idx, model.getBookings ().size ());
-									hc.request (hc.book (booking.getId ()));
-								}
-							model.getSelected ().clear ();
+							bookingsManager.book ();
+							rv.getAdapter ().notifyDataSetChanged ();
 						});
 			}
 
@@ -75,16 +63,16 @@ public class BookActivity extends AppCompatActivity
 			{
 				super.onPostResume ();
 				rv.getAdapter ().notifyDataSetChanged ();
-				Model.getInstance ().getBookings ().sort (Booking::compareTo);
 			}
 
 		@Override
 		public boolean onCreateOptionsMenu (Menu menu)
 			{
+				getUser ();
 				getMenuInflater ().inflate (R.menu.toolbar_menu, menu);
 				logout = menu.findItem (R.id.action_logout);
 				history = menu.findItem (R.id.action_history);
-				if (model.getUser () == null)
+				if (Model.getInstance ().getUser () == null)
 					{
 						logout.setIcon (R.drawable.ic_account_circle);
 						history.setEnabled (false);
@@ -95,13 +83,14 @@ public class BookActivity extends AppCompatActivity
 		@Override
 		public boolean onOptionsItemSelected (MenuItem item)
 			{
+				Model m = Model.getInstance ();
 				switch (item.getItemId ())
 					{
 						case R.id.action_logout:
 							HttpClient hc = new HttpClient ();
 							try
 								{
-									if (model.getUser () == null)
+									if (m.getUser () == null)
 										{
 											startActivity (new Intent (BookActivity.this, LoginActivity.class));
 											finish ();
@@ -118,7 +107,7 @@ public class BookActivity extends AppCompatActivity
 															.show ();
 													item.setIcon (R.drawable.ic_account_circle);
 													history.setEnabled (false);
-													model.setUser (null);
+													m.setUser (null);
 													getSharedPreferences ("usr_pref", MODE_PRIVATE).edit ().remove ("user")
 															.apply ();
 												}
@@ -143,8 +132,11 @@ public class BookActivity extends AppCompatActivity
 
 		private boolean getUser()
 			{
-				String usr = getSharedPreferences ("usr_pref", MODE_PRIVATE).getString ("user", null);
-				Model.getInstance ().setUser (new Gson ().fromJson (usr, User.class));
-				return usr != null;
+				if (Model.getInstance ().getUser () == null)
+					{
+						String usr = getSharedPreferences ("usr_pref", MODE_PRIVATE).getString ("user", null);
+						Model.getInstance ().setUser (new Gson ().fromJson (usr, User.class));
+					}
+				return Model.getInstance ().getUser () != null;
 			}
 	}

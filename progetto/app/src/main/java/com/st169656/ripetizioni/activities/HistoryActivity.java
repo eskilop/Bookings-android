@@ -21,12 +21,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.st169656.ripetizioni.BookingsManager;
 import com.st169656.ripetizioni.R;
 import com.st169656.ripetizioni.adapters.HistoryAdapter;
 import com.st169656.ripetizioni.adapters.IncomingBookingsAdapter;
-import com.st169656.ripetizioni.model.Booking;
-import com.st169656.ripetizioni.model.History;
-import com.st169656.ripetizioni.model.Model;
 
 public class HistoryActivity extends AppCompatActivity
 	{
@@ -36,6 +34,7 @@ public class HistoryActivity extends AppCompatActivity
 		public static class RecyclerPairHolder {
 			public RecyclerView incoming;
 			public RecyclerView past;
+			private BookingsManager bookingsManager = new BookingsManager ();
 
 			public RecyclerPairHolder (RecyclerView rv1, RecyclerView rv2)
 				{
@@ -46,22 +45,10 @@ public class HistoryActivity extends AppCompatActivity
 						}
 				}
 
-			public void addToPast(History h)
+			public void update()
 				{
-					Model.getInstance ().getHistory ().add (h);
 					past.getAdapter ().notifyDataSetChanged ();
-				}
-
-			// only incoming bookings can be removed
-			public void removeIncoming(Booking b)
-				{
-					Model.getInstance ().getIncomingBookings ().remove (b);
-					Model.getInstance ().getBookings ().add (b);
 					incoming.getAdapter ().notifyDataSetChanged ();
-					/*incoming.removeViewAt (adapterPosition);
-					incoming.getAdapter ().notifyItemRemoved(adapterPosition);
-					incoming.getAdapter ().notifyItemRangeChanged (adapterPosition, Model.getInstance ()
-																																							.getIncomingBookings ().size ());*/
 				}
 		}
 

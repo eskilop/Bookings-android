@@ -15,6 +15,8 @@
  */
 package com.st169656.ripetizioni;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.st169656.ripetizioni.model.Booking;
@@ -36,13 +38,11 @@ import java.util.concurrent.Future;
 
 public class HttpClient
 	{
-		private Model model = Model.getInstance ();
 		private static final String BASE_URL = "http://192.168.1.71:8080/api?";
 		private static ExecutorService threadPool = Executors.newFixedThreadPool (5);
 
 		public HttpClient ()
 			{
-
 			}
 
 		public <T> Future <T> request (Callable r)
@@ -56,7 +56,7 @@ public class HttpClient
 				{
 					HUC huc = new HUC (BASE_URL + "method=login");
 					Response result = huc.post (new Gson ().toJson (u));
-					model.setUser (result.toObj (new TypeToken<User> (){}.getType ()));
+					Model.getInstance ().setUser (result.toObj (new TypeToken<User> (){}.getType ()));
 					return result;
 				};
 			}
@@ -65,7 +65,7 @@ public class HttpClient
 			{
 				return () ->
 				{
-					HUC huc = new HUC (BASE_URL + "method=logout&by_user=" + model.getUser ().getId ());
+					HUC huc = new HUC (BASE_URL + "method=logout&by_user=" + Model.getInstance ().getUser ().getId ());
 					String response = huc.rawGet ();
 					return new Gson ().fromJson (response, Boolean.class);
 				};
@@ -75,8 +75,8 @@ public class HttpClient
 			{
 				return () ->
 				{
-					HUC huc = new HUC (BASE_URL + "method=book&by_user=" + model.getUser ().getId ()
-														 + "&booking_id=" + booking_id);
+					HUC huc = new HUC (BASE_URL + "method=book&by_user=" + Model.getInstance ().getUser ().getId () +
+														 "&booking_id=" + booking_id);
 					return huc.get ();
 				};
 			}
@@ -85,7 +85,7 @@ public class HttpClient
 			{
 				return () ->
 				{
-					HUC huc = new HUC (BASE_URL + "method=unbook&by_user=" + model.getUser ().getId ()
+					HUC huc = new HUC (BASE_URL + "method=unbook&by_user=" + Model.getInstance ().getUser ().getId ()
 														 + "&booking_id=" + booking_id);
 					String res = huc.rawGet ();
 					Type type = new TypeToken <HistoryElementResponse> () {}.getType ();
@@ -97,7 +97,7 @@ public class HttpClient
 			{
 				return () ->
 				{
-					int idToSearch = model.getUser () != null ? model.getUser ().getId () : 0;
+					int idToSearch = Model.getInstance ().getUser () != null ? Model.getInstance ().getUser ().getId () : 0;
 					HUC huc = new HUC (BASE_URL + "method=getBookings&by_user=" + idToSearch);
 					String res = huc.rawGet ();
 					Type type = new TypeToken <ArrayList <Booking>> () {}.getType ();
@@ -109,7 +109,8 @@ public class HttpClient
 			{
 				return () ->
 				{
-					HUC huc = new HUC (BASE_URL + "method=getIncomingBookings&id=" + model.getUser ().getId ());
+					HUC huc = new HUC (BASE_URL + "method=getIncomingBookings&id=" + Model.getInstance ().getUser ()
+												.getId ());
 					String r = huc.rawGet ();
 					Type t = new TypeToken<BookingResponse> (){}.getType ();
 					return new Gson ().fromJson (r, t);
@@ -120,7 +121,7 @@ public class HttpClient
 			{
 				return () ->
 				{
-					HUC huc = new HUC (BASE_URL + "method=getPastBookings&id=" + model.getUser ().getId ());
+					HUC huc = new HUC (BASE_URL + "method=getPastBookings&id=" + Model.getInstance ().getUser ().getId ());
 					String r = huc.rawGet ();
 					Type t = new TypeToken<HistoryResponse> (){}.getType ();
 					return new Gson ().fromJson (r, t);

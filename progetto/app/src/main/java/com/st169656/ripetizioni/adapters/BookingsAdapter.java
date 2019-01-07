@@ -27,16 +27,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.st169656.ripetizioni.R;
+import com.st169656.ripetizioni.BookingsManager;
 import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
 
 public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.BookingsViewHolder>
 	{
-		Model model = Model.getInstance ();
-		LayoutInflater inflater;
+		private BookingsManager bookingsManager = Model.getInstance ().getBookingsManager ();
+		private BookingsAdapter adapter = this;
 
 		public BookingsAdapter ()
 			{
+
 			}
 
 		public static class BookingsViewHolder extends RecyclerView.ViewHolder
@@ -44,9 +46,9 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 				public TextView card_title;
 				public TextView card_subheader;
 				public TextView card_content;
-				private Model model = Model.getInstance ();
+				public BookingsManager bookingsManager = Model.getInstance ().getBookingsManager ();
 
-				public BookingsViewHolder (View v)
+				public BookingsViewHolder (View v, BookingsAdapter a)
 					{
 						super (v);
 						card_title = v.findViewById (R.id.booking_title);
@@ -55,22 +57,21 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 						v.setOnClickListener (
 								(view) ->
 								{
-
 									Animator anim = circularReveal (v);
 
-									Booking selectedBooking = model.getBookings ().get (getAdapterPosition ());
-									Log.e ("ap", String.valueOf (getAdapterPosition ()));
-									Log.e ("asd", selectedBooking.toString ());
+									Booking selectedBooking = bookingsManager.bookingAt (getAdapterPosition ());
 
-									if (model.getSelected ().contains (selectedBooking))
+									if (bookingsManager.isSelected (selectedBooking))
 										{
+											bookingsManager.deSelect (selectedBooking);
+											a.notifyDataSetChanged ();
 											view.setBackgroundColor (view.getContext ().getResources ().getColor (R.color.colorTransparent));
-											model.getSelected ().remove (selectedBooking);
 										}
 									else
 										{
+											bookingsManager.select (selectedBooking);
+											a.notifyDataSetChanged ();
 											view.setBackgroundColor (view.getContext ().getResources ().getColor (R.color.colorAccent));
-											model.getSelected ().add (selectedBooking);
 										}
 									anim.start ();
 								});
@@ -111,20 +112,20 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 		public BookingsViewHolder onCreateViewHolder (@NonNull ViewGroup parent, int type)
 			{
 				View v = LayoutInflater.from (parent.getContext ()).inflate (R.layout.booking_card, parent, false);
-				BookingsViewHolder bvh = new BookingsViewHolder (v);
+				BookingsViewHolder bvh = new BookingsViewHolder (v, adapter);
 				return bvh;
 			}
 
 		@Override
 		public void onBindViewHolder (@NonNull BookingsViewHolder bookingsViewHolder, int position)
 			{
-				bookingsViewHolder.setTextFromElement (model.getBookings ().get (position));
+				bookingsViewHolder.setTextFromElement (bookingsManager.bookingAt (position));
 			}
 
 		@Override
 		public int getItemCount ()
 			{
-				return model.getBookings ().size ();
+				return bookingsManager.sizeOfBookings ();
 			}
 
 		@Override

@@ -27,20 +27,18 @@ import android.widget.TextView;
 
 import com.st169656.ripetizioni.HttpClient;
 import com.st169656.ripetizioni.R;
+import com.st169656.ripetizioni.BookingsManager;
 import com.st169656.ripetizioni.activities.HistoryActivity;
 import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
-import com.st169656.ripetizioni.model.wrapper.BookingResponse;
 import com.st169656.ripetizioni.model.wrapper.HistoryElementResponse;
-import com.st169656.ripetizioni.model.wrapper.Response;
 
 import java.util.concurrent.ExecutionException;
 
 public class IncomingBookingsAdapter
 		extends RecyclerView.Adapter <IncomingBookingsAdapter.BookingsViewHolder>
 	{
-		LayoutInflater inflater;
-		Model model = Model.getInstance ();
+		BookingsManager bookingsManager = Model.getInstance ().getBookingsManager ();
 		HistoryActivity.RecyclerPairHolder rph;
 
 		public IncomingBookingsAdapter (HistoryActivity.RecyclerPairHolder rph)
@@ -85,20 +83,9 @@ public class IncomingBookingsAdapter
 				bvh.cancel_booking.setOnClickListener (
 						(view) ->
 						{
-							Booking selected = model.getIncomingBookings ().get (bvh.getAdapterPosition ());
-							Log.e ("N", String.valueOf (bvh.getAdapterPosition ()));
-							Log.e ("SLELETEd", selected.toString ());
-							HistoryElementResponse hr = null;
-							try
-								{
-									hr = (HistoryElementResponse) hc.request (hc.unbook (selected.getId ())).get ();
-								}
-							catch (ExecutionException | InterruptedException e)
-								{
-									e.printStackTrace ();
-								}
-							rph.addToPast (hr.getValue ());
-							rph.removeIncoming (selected);
+							Booking selected = bookingsManager.incomingAt (bvh.getAdapterPosition ());
+							bookingsManager.cancelBooking (selected);
+							rph.update ();
 						}
 				);
 				return bvh;
@@ -107,16 +94,13 @@ public class IncomingBookingsAdapter
 		@Override
 		public void onBindViewHolder (@NonNull IncomingBookingsAdapter.BookingsViewHolder bookingsViewHolder, int position)
 			{
-				bookingsViewHolder.setTextFromElement (Model.getInstance ().getBookings ().get (position));
+				bookingsViewHolder.setTextFromElement (bookingsManager.incomingAt ((position)));
 			}
 
 		@Override
 		public int getItemCount ()
 			{
-				if (model.getIncomingBookings () == null)
-					return 0;
-				else
-					return model.getIncomingBookings ().size ();
+				return bookingsManager.sizeOfIncoming ();
 			}
 
 		@Override

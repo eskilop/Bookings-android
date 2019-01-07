@@ -92,11 +92,11 @@ public class Booking implements Comparable<Booking>
     @Override
     public int compareTo (Booking o)
       {
-        if (this.getDate ().equals (o.getDate ()))
+        if (this.getId () == o.getId ())
           return 0;
         else
           {
-            boolean b = this.getDate ().after (o.getDate ());
+            boolean b = this.getId () > o.getId ();
             if (b)
               return +1;
             else

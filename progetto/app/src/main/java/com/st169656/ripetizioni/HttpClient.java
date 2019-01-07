@@ -71,13 +71,15 @@ public class HttpClient
 				};
 			}
 
-		public Callable <Response> book (int booking_id)
+		public Callable <HistoryElementResponse> book (int booking_id)
 			{
 				return () ->
 				{
 					HUC huc = new HUC (BASE_URL + "method=book&by_user=" + Model.getInstance ().getUser ().getId () +
 														 "&booking_id=" + booking_id);
-					return huc.get ();
+					String response = huc.rawGet ();
+					Type type = new TypeToken <HistoryElementResponse> () {}.getType ();
+					return new Gson ().fromJson (response, type);
 				};
 			}
 

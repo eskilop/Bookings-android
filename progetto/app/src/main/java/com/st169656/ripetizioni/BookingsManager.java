@@ -82,8 +82,8 @@ public class BookingsManager
 					{
 						try
 							{
-								Response r = (Response) hc.request (hc.book (b.getId ())).get ();
-								if (r.getKey ()) Log.e ("R", r.toString ());
+								HistoryElementResponse r = (HistoryElementResponse) hc.request (hc.book (b.getId ())).get ();
+								pastBookings.add (r.getValue ());
 							}
 						catch (ExecutionException | InterruptedException e)
 							{

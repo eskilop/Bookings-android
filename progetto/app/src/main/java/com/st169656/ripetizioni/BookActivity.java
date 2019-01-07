@@ -35,8 +35,6 @@ public class BookActivity extends AppCompatActivity
 
 				setSupportActionBar (findViewById (R.id.toolbar));
 
-				Log.e ("inst", String.valueOf (Model.getInstance () == null));
-
 				rv = findViewById (R.id.bookings_list);
 				layoutManager = new GridLayoutManager (BookActivity.this, 3);
 				rv.setLayoutManager (layoutManager);

@@ -1,5 +1,8 @@
 package com.st169656.ripetizioni;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -7,8 +10,15 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.google.gson.Gson;
+import com.st169656.ripetizioni.activities.HistoryActivity;
+import com.st169656.ripetizioni.activities.LoginActivity;
+import com.st169656.ripetizioni.adapters.BookingsAdapter;
+import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
+import com.st169656.ripetizioni.model.User;
 import com.st169656.ripetizioni.model.wrapper.Response;
 import com.st169656.ripetizioni.model.wrapper.UserCredential;
 
@@ -30,7 +40,7 @@ public class BookActivity extends AppCompatActivity
 
 				setSupportActionBar (findViewById (R.id.toolbar));
 
-				doLogin ();
+				// doLogin ();
 
 				rv = findViewById (R.id.bookings_list);
 				layoutManager = new GridLayoutManager (BookActivity.this, 3);
@@ -38,30 +48,26 @@ public class BookActivity extends AppCompatActivity
 				rv.setHasFixedSize (true);
 				rv.setAdapter (new BookingsAdapter ());
 
+				getUser ();
+				model.loadBookings (rv);
+
 
 				findViewById (R.id.floatingActionButton).setOnClickListener (
 						v ->
 						{
-
+							HttpClient hc = new HttpClient ();
+							for (Booking booking : model.getSelected ())
+								{
+									int idx = model.getBookings ().indexOf (booking);
+									model.getBookings ().remove (booking);
+									model.getIncomingBookings ().add (booking);
+									rv.removeViewAt (idx);
+									rv.getAdapter ().notifyItemRemoved(idx);
+									rv.getAdapter ().notifyItemRangeChanged (idx, model.getBookings ().size ());
+									hc.request (hc.book (booking.getId ()));
+								}
+							model.getSelected ().clear ();
 						});
-			}
-
-		public void doLogin ()
-			{
-				UserCredential u = new UserCredential ("John", "sample");
-				HttpClient hc = new HttpClient ();
-				try
-					{
-						Response r = (Response) hc.request (hc.login (u)).get ();
-					}
-				catch (ExecutionException e)
-					{
-						e.printStackTrace ();
-					}
-				catch (InterruptedException e)
-					{
-						e.printStackTrace ();
-					}
 			}
 
 		@Override
@@ -89,11 +95,8 @@ public class BookActivity extends AppCompatActivity
 								{
 									if (model.getUser () == null)
 										{
-											// Todo start new activity
-											Response r = (Response) hc.request (hc.login (new UserCredential ("John", "sample"))).get ();
-											r.dispatch (BookActivity.this);
-											item.setIcon (R.drawable.ic_exit);
-											history.setEnabled (true);
+											startActivity (new Intent (BookActivity.this, LoginActivity.class));
+											finish ();
 										}
 									else
 										{
@@ -108,6 +111,8 @@ public class BookActivity extends AppCompatActivity
 													item.setIcon (R.drawable.ic_account_circle);
 													history.setEnabled (false);
 													model.setUser (null);
+													getSharedPreferences ("usr_pref", MODE_PRIVATE).edit ().remove ("user")
+															.commit ();
 												}
 										}
 								}
@@ -122,8 +127,16 @@ public class BookActivity extends AppCompatActivity
 							break;
 
 						case R.id.action_history:
+							startActivity (new Intent (BookActivity.this, HistoryActivity.class));
 							break;
 					}
 				return super.onOptionsItemSelected (item);
+			}
+
+		private boolean getUser()
+			{
+				String usr = getSharedPreferences ("usr_pref", MODE_PRIVATE).getString ("user", null);
+				Model.getInstance ().setUser (new Gson ().fromJson (usr, User.class));
+				return usr != null;
 			}
 	}

@@ -20,7 +20,10 @@ import com.google.gson.reflect.TypeToken;
 import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
 import com.st169656.ripetizioni.model.User;
+import com.st169656.ripetizioni.model.wrapper.BookingResponse;
 import com.st169656.ripetizioni.model.wrapper.HUC;
+import com.st169656.ripetizioni.model.wrapper.HistoryElementResponse;
+import com.st169656.ripetizioni.model.wrapper.HistoryResponse;
 import com.st169656.ripetizioni.model.wrapper.Response;
 import com.st169656.ripetizioni.model.wrapper.UserCredential;
 
@@ -78,13 +81,15 @@ public class HttpClient
 				};
 			}
 
-		public Callable <Response> unbook (int booking_id)
+		public Callable <HistoryElementResponse> unbook (int booking_id)
 			{
 				return () ->
 				{
 					HUC huc = new HUC (BASE_URL + "method=unbook&by_user=" + model.getUser ().getId ()
 														 + "&booking_id=" + booking_id);
-					return huc.get ();
+					String res = huc.rawGet ();
+					Type type = new TypeToken <HistoryElementResponse> () {}.getType ();
+					return new Gson ().fromJson (res, type);
 				};
 			}
 
@@ -92,28 +97,33 @@ public class HttpClient
 			{
 				return () ->
 				{
-					HUC huc = new HUC (BASE_URL + "method=getBookings&by_user=" + model.getUser ().getId ());
+					int idToSearch = model.getUser () != null ? model.getUser ().getId () : 0;
+					HUC huc = new HUC (BASE_URL + "method=getBookings&by_user=" + idToSearch);
 					String res = huc.rawGet ();
 					Type type = new TypeToken <ArrayList <Booking>> () {}.getType ();
 					return new Gson ().fromJson (res, type);
 				};
 			}
 
-		public Callable <Response> getIncomingBookings ()
+		public Callable <BookingResponse> getIncomingBookings ()
 			{
 				return () ->
 				{
 					HUC huc = new HUC (BASE_URL + "method=getIncomingBookings&id=" + model.getUser ().getId ());
-					return huc.get ();
+					String r = huc.rawGet ();
+					Type t = new TypeToken<BookingResponse> (){}.getType ();
+					return new Gson ().fromJson (r, t);
 				};
 			}
 
-		public Callable <Response> getPastBookings ()
+		public Callable <HistoryResponse> getPastBookings ()
 			{
 				return () ->
 				{
 					HUC huc = new HUC (BASE_URL + "method=getPastBookings&id=" + model.getUser ().getId ());
-					return huc.get ();
+					String r = huc.rawGet ();
+					Type t = new TypeToken<HistoryResponse> (){}.getType ();
+					return new Gson ().fromJson (r, t);
 				};
 			}
 	}

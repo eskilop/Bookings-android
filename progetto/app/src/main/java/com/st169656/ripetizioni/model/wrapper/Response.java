@@ -47,7 +47,10 @@ public class Response
 
 		public <T> T toObj (Type t)
 			{
-				return new Gson ().fromJson (value, t);
+				if (key)
+					return new Gson ().fromJson (value, t);
+				else
+					return null;
 			}
 
 		public void dispatch (Context context)

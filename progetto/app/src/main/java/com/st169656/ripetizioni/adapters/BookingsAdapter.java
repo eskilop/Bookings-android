@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package com.st169656.ripetizioni;
+package com.st169656.ripetizioni.adapters;
 
 import android.animation.Animator;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.st169656.ripetizioni.HttpClient;
+import com.st169656.ripetizioni.R;
 import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
 
@@ -38,20 +41,10 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 
 		public BookingsAdapter ()
 			{
-				HttpClient hc = new HttpClient ();
-				try
-					{
-						model.setBookings ((ArrayList <Booking>) hc.request (hc.getBookings ()).get ());
-					}
-				catch (ExecutionException | InterruptedException e)
-					{
-						e.printStackTrace ();
-					}
 			}
 
 		public static class BookingsViewHolder extends RecyclerView.ViewHolder
 			{
-				// each data item is just a string in this case
 				public TextView card_title;
 				public TextView card_subheader;
 				public TextView card_content;
@@ -67,38 +60,48 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 								(view) ->
 								{
 
-									// get the center for the clipping circle
-									int centerX = v.getMeasuredWidth () / 2;
-									int centerY = v.getMeasuredHeight () / 2;
+									Animator anim = circularReveal (v);
 
-									int startRadius = 0;
-									// get the final radius for the clipping circle
-									int endRadius = Math.max (view.getWidth (), view.getHeight ());
+									Booking selectedBooking = model.getBookings ().get (getAdapterPosition ());
+									Log.e ("ap", String.valueOf (getAdapterPosition ()));
+									Log.e ("asd", selectedBooking.toString ());
 
-									// create the animator for this view (the start radius is zero)
-									Animator anim =
-											ViewAnimationUtils.createCircularReveal (view, centerX, centerY, startRadius, endRadius);
-
-									// make the view visible and start the animation
-									view.setVisibility (View.VISIBLE);
-
-									Booking selected = model.getBookings ().get (getAdapterPosition ());
-
-									if (model.getSelected ().contains (selected))
+									if (model.getSelected ().contains (selectedBooking))
 										{
 											view.setBackgroundColor (view.getContext ().getResources ().getColor (R.color.colorTransparent));
-											model.getSelected ().remove (model.getBookings ().get (getAdapterPosition ()));
+											model.getSelected ().remove (selectedBooking);
 										}
 									else
 										{
 											view.setBackgroundColor (view.getContext ().getResources ().getColor (R.color.colorAccent));
-											model.getSelected ().add (model.getBookings ().get (getAdapterPosition ()));
+											model.getSelected ().add (selectedBooking);
 										}
 									anim.start ();
 								});
 					}
 
-				public void setTextFromElement (Booking b)
+				Animator circularReveal(View v)
+					{
+						// get the center for the clipping circle
+						int centerX = v.getMeasuredWidth () / 2;
+						int centerY = v.getMeasuredHeight () / 2;
+
+						int startRadius = 0;
+						// get the final radius for the clipping circle
+						int endRadius = Math.max (v.getWidth (), v.getHeight ());
+
+						// create the animator for this view (the start radius is zero)
+						Animator anim =
+								ViewAnimationUtils.createCircularReveal (v, centerX, centerY, startRadius,
+																												 endRadius);
+
+						// make the view visible and start the animation
+						v.setVisibility (View.VISIBLE);
+
+						return anim;
+					}
+
+				void setTextFromElement (Booking b)
 					{
 						card_title.setText (b.getFrom ().getCourse ().getCourseTitle ());
 						String teacherName = b.getFrom ().getName () + " " + b.getFrom ().getSurname ();
@@ -119,16 +122,13 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 		@Override
 		public void onBindViewHolder (@NonNull BookingsViewHolder bookingsViewHolder, int position)
 			{
-				bookingsViewHolder.setTextFromElement (Model.getInstance ().getBookings ().get (position));
+				bookingsViewHolder.setTextFromElement (model.getBookings ().get (position));
 			}
 
 		@Override
 		public int getItemCount ()
 			{
-				if (Model.getInstance ().getBookings () == null)
-					return 0;
-				else
-					return Model.getInstance ().getBookings ().size ();
+				return model.getBookings ().size ();
 			}
 
 		@Override

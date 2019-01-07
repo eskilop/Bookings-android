@@ -70,13 +70,13 @@ public class BookingsManager
 		public void select(Booking b)
 			{
 				selected.add (b);
-				updateBookingsBySelection (b);
+				updateBookingsBySelection ();
 			}
 
 		public void deSelect(Booking b)
 			{
 				selected.remove (b);
-				updateBookingsBySelection (null);
+				updateBookingsBySelection ();
 			}
 
 		public void clearSelection()
@@ -163,12 +163,12 @@ public class BookingsManager
 				bookings.sort (Booking::compareTo);
 			}
 
-		private void updateBookingsBySelection(Booking b)
+		private void updateBookingsBySelection()
 			{
 				bookings.clear ();
 				bookings.addAll (integralBookings);
 				filterBookingsBySelection ();
-				if (b != null) bookings.add (b);
+				bookings.addAll (selected);
 				bookings.sort (Booking::compareTo);
 			}
 

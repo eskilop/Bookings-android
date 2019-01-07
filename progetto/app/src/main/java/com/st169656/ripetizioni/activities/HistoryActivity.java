@@ -16,22 +16,54 @@
 
 package com.st169656.ripetizioni.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.st169656.ripetizioni.adapters.BookingsAdapter;
 import com.st169656.ripetizioni.R;
-import com.st169656.ripetizioni.adapters.IncomingBookingsAdapter;
 import com.st169656.ripetizioni.adapters.HistoryAdapter;
+import com.st169656.ripetizioni.adapters.IncomingBookingsAdapter;
+import com.st169656.ripetizioni.model.Booking;
+import com.st169656.ripetizioni.model.History;
 import com.st169656.ripetizioni.model.Model;
 
 public class HistoryActivity extends AppCompatActivity
 	{
 
 		RecyclerView incomingBookings, pastBookings;
-		Model model = Model.getInstance ();
+
+		public static class RecyclerPairHolder {
+			public RecyclerView incoming;
+			public RecyclerView past;
+
+			public RecyclerPairHolder (RecyclerView rv1, RecyclerView rv2)
+				{
+					if (rv1 != null && rv2 != null)
+						{
+							this.incoming = rv1;
+							this.past = rv2;
+						}
+				}
+
+			public void addToPast(History h)
+				{
+					Model.getInstance ().getHistory ().add (h);
+					past.getAdapter ().notifyDataSetChanged ();
+				}
+
+			// only incoming bookings can be removed
+			public void removeIncoming(Booking b)
+				{
+					Model.getInstance ().getIncomingBookings ().remove (b);
+					Model.getInstance ().getBookings ().add (b);
+					incoming.getAdapter ().notifyDataSetChanged ();
+					/*incoming.removeViewAt (adapterPosition);
+					incoming.getAdapter ().notifyItemRemoved(adapterPosition);
+					incoming.getAdapter ().notifyItemRangeChanged (adapterPosition, Model.getInstance ()
+																																							.getIncomingBookings ().size ());*/
+				}
+		}
 
 		@Override
 		protected void onCreate (Bundle savedInstanceState)
@@ -52,11 +84,10 @@ public class HistoryActivity extends AppCompatActivity
 				incomingBookings.setHasFixedSize (true);
 				pastBookings.setHasFixedSize (true);
 
-				incomingBookings.setAdapter (new IncomingBookingsAdapter (incomingBookings));
-				pastBookings.setAdapter (new HistoryAdapter ());
+				RecyclerPairHolder rph = new RecyclerPairHolder (incomingBookings, pastBookings);
 
-				model.loadIncomingBookings (incomingBookings);
-				model.loadPastBookings (pastBookings);
+				incomingBookings.setAdapter (new IncomingBookingsAdapter (rph));
+				pastBookings.setAdapter (new HistoryAdapter (rph));
 
 			}
 	}

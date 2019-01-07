@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity
 								Model.getInstance ().setUser (r.toObj (User.class));
 								SharedPreferences.Editor editor = getSharedPreferences ("usr_pref", MODE_PRIVATE).edit ();
 								editor.putString ("user", r.getValue ());
-								editor.commit ();
+								editor.apply ();
 								startActivity (new Intent (LoginActivity.this, BookActivity.class));
 								finish ();
 							}

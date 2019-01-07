@@ -40,8 +40,6 @@ public class BookActivity extends AppCompatActivity
 
 				setSupportActionBar (findViewById (R.id.toolbar));
 
-				// doLogin ();
-
 				rv = findViewById (R.id.bookings_list);
 				layoutManager = new GridLayoutManager (BookActivity.this, 3);
 				rv.setLayoutManager (layoutManager);
@@ -49,7 +47,9 @@ public class BookActivity extends AppCompatActivity
 				rv.setAdapter (new BookingsAdapter ());
 
 				getUser ();
-				model.loadBookings (rv);
+				Model.loadBookings (rv);
+				Model.loadIncomingBookings (null);
+				Model.loadPastBookings (null);
 
 
 				findViewById (R.id.floatingActionButton).setOnClickListener (
@@ -68,6 +68,13 @@ public class BookActivity extends AppCompatActivity
 								}
 							model.getSelected ().clear ();
 						});
+			}
+
+		@Override
+		protected void onPostResume ()
+			{
+				super.onPostResume ();
+				rv.getAdapter ().notifyDataSetChanged ();
 			}
 
 		@Override
@@ -112,7 +119,7 @@ public class BookActivity extends AppCompatActivity
 													history.setEnabled (false);
 													model.setUser (null);
 													getSharedPreferences ("usr_pref", MODE_PRIVATE).edit ().remove ("user")
-															.commit ();
+															.apply ();
 												}
 										}
 								}

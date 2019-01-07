@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.st169656.ripetizioni.HttpClient;
 import com.st169656.ripetizioni.R;
+import com.st169656.ripetizioni.activities.HistoryActivity;
 import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
 import com.st169656.ripetizioni.model.wrapper.BookingResponse;
@@ -40,11 +41,11 @@ public class IncomingBookingsAdapter
 	{
 		LayoutInflater inflater;
 		Model model = Model.getInstance ();
-		RecyclerView rv;
+		HistoryActivity.RecyclerPairHolder rph;
 
-		public IncomingBookingsAdapter (RecyclerView rv)
+		public IncomingBookingsAdapter (HistoryActivity.RecyclerPairHolder rph)
 			{
-				this.rv = rv;
+				this.rph = rph;
 			}
 
 		public static class BookingsViewHolder extends RecyclerView.ViewHolder
@@ -96,12 +97,8 @@ public class IncomingBookingsAdapter
 								{
 									e.printStackTrace ();
 								}
-							model.getHistory ().add (hr.getValue ());
-							model.getIncomingBookings ().remove (selected);
-							model.getBookings ().add (selected);
-							rv.removeViewAt (bvh.getAdapterPosition ());
-							notifyItemRemoved(bvh.getAdapterPosition ());
-							notifyItemRangeChanged (bvh.getAdapterPosition (), model.getIncomingBookings ().size ());
+							rph.addToPast (hr.getValue ());
+							rph.removeIncoming (selected);
 						}
 				);
 				return bvh;

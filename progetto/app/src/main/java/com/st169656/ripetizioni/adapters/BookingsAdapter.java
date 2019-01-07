@@ -26,13 +26,9 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.st169656.ripetizioni.HttpClient;
 import com.st169656.ripetizioni.R;
 import com.st169656.ripetizioni.model.Booking;
 import com.st169656.ripetizioni.model.Model;
-
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.BookingsViewHolder>
 	{

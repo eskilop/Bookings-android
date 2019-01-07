@@ -18,36 +18,25 @@ package com.st169656.ripetizioni.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.st169656.ripetizioni.HttpClient;
 import com.st169656.ripetizioni.R;
-import com.st169656.ripetizioni.model.Booking;
+import com.st169656.ripetizioni.activities.HistoryActivity;
 import com.st169656.ripetizioni.model.History;
 import com.st169656.ripetizioni.model.Model;
-import com.st169656.ripetizioni.model.wrapper.BookingResponse;
-import com.st169656.ripetizioni.model.wrapper.HistoryResponse;
-import com.st169656.ripetizioni.model.wrapper.Response;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 public class HistoryAdapter extends RecyclerView.Adapter <HistoryAdapter.HistoryViewHolder>
 	{
 		LayoutInflater inflater;
 		Model model = Model.getInstance ();
+		HistoryActivity.RecyclerPairHolder rph;
 
-		public HistoryAdapter ()
+		public HistoryAdapter (HistoryActivity.RecyclerPairHolder rph)
 			{
+				this.rph = rph;
 			}
 
 		public static class HistoryViewHolder extends RecyclerView.ViewHolder

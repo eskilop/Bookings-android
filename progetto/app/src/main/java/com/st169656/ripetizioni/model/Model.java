@@ -40,7 +40,7 @@ public class Model
 			{
 			}
 
-		public void loadBookings (RecyclerView rv)
+		public static void loadBookings (RecyclerView rv)
 			{
 				HttpClient hc = new HttpClient ();
 				new AsyncTask <Void, Void, Void> ()
@@ -51,7 +51,7 @@ public class Model
 							{
 								try
 									{
-										bookings.addAll ((Collection <? extends Booking>) hc.request (hc.getBookings ()).get ());
+										Model.getInstance ().getBookings ().addAll ((Collection <? extends Booking>) hc.request (hc.getBookings ()).get ());
 									}
 								catch (ExecutionException | InterruptedException e)
 									{
@@ -64,12 +64,13 @@ public class Model
 						protected void onPostExecute (Void aVoid)
 							{
 								super.onPostExecute (aVoid);
-								rv.getAdapter ().notifyDataSetChanged ();
+								if (rv != null && rv.getAdapter () != null)
+									rv.getAdapter ().notifyDataSetChanged ();
 							}
 					}.execute ();
 			}
 
-		public void loadIncomingBookings (RecyclerView rv)
+		public static void loadIncomingBookings (RecyclerView rv)
 			{
 				HttpClient hc = new HttpClient ();
 				new AsyncTask <Void, Void, Void> ()
@@ -80,7 +81,7 @@ public class Model
 							{
 								try
 									{
-										incomingBookings.addAll (((BookingResponse) hc.request (hc.getIncomingBookings ()).get ()).getValue ());
+										Model.getInstance ().getIncomingBookings ().addAll (((BookingResponse) hc.request (hc.getIncomingBookings ()).get ()).getValue ());
 									}
 								catch (ExecutionException | InterruptedException e)
 									{
@@ -93,12 +94,13 @@ public class Model
 						protected void onPostExecute (Void aVoid)
 							{
 								super.onPostExecute (aVoid);
-								rv.getAdapter ().notifyDataSetChanged ();
+								if (rv != null && rv.getAdapter () != null)
+									rv.getAdapter ().notifyDataSetChanged ();
 							}
 					}.execute ();
 			}
 
-		public void loadPastBookings (RecyclerView rv)
+		public static void loadPastBookings (RecyclerView rv)
 			{
 				HttpClient hc = new HttpClient ();
 				new AsyncTask <Void, Void, Void> ()
@@ -109,7 +111,7 @@ public class Model
 							{
 								try
 									{
-										pastBookings.addAll (((HistoryResponse) hc.request (hc.getPastBookings ()).get ()).getValue ());
+										Model.getInstance ().getHistory ().addAll (((HistoryResponse) hc.request (hc.getPastBookings ()).get ()).getValue ());
 									}
 								catch (ExecutionException | InterruptedException e)
 									{
@@ -122,7 +124,8 @@ public class Model
 						protected void onPostExecute (Void aVoid)
 							{
 								super.onPostExecute (aVoid);
-								rv.getAdapter ().notifyDataSetChanged ();
+								if (rv != null && rv.getAdapter () != null)
+									rv.getAdapter ().notifyDataSetChanged ();
 							}
 					}.execute ();
 			}

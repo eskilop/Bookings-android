@@ -168,7 +168,6 @@ public class BookingsManager
 				bookings.clear ();
 				bookings.addAll (integralBookings);
 				filterBookingsBySelection ();
-				bookings.addAll (selected);
 				bookings.sort (Booking::compareTo);
 			}
 
@@ -186,6 +185,7 @@ public class BookingsManager
 				for (Booking i : selected)
 					toRemove.addAll (flaggedForRemoval (i.getDate ()));
 				bookings.removeAll (toRemove);
+				bookings.addAll (selected);
 			}
 
 		private ArrayList<Booking> flaggedForRemoval(Timestamp t)

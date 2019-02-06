@@ -65,14 +65,13 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 										{
 											view.setBackgroundColor (view.getContext ().getResources ().getColor (R.color.colorTransparent));
 											bookingsManager.deSelect (selectedBooking);
-											a.notifyDataSetChanged ();
 										}
 									else
 										{
 											view.setBackgroundColor (view.getContext ().getResources ().getColor (R.color.colorAccent));
 											bookingsManager.select (selectedBooking);
-											a.notifyDataSetChanged ();
 										}
+									a.notifyDataSetChanged ();
 									anim.start ();
 								});
 					}

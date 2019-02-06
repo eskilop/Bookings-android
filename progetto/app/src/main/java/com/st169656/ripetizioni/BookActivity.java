@@ -39,7 +39,7 @@ public class BookActivity extends AppCompatActivity
 				layoutManager = new GridLayoutManager (BookActivity.this, 3);
 				rv.setLayoutManager (layoutManager);
 				rv.setHasFixedSize (true);
-				rv.setAdapter (new BookingsAdapter ());
+				rv.setAdapter (new BookingsAdapter (rv));
 
 				Model.loadBookings (rv);
 				if (getUser ())

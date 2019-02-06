@@ -35,10 +35,11 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 	{
 		private BookingsManager bookingsManager = Model.getInstance ().getBookingsManager ();
 		private BookingsAdapter adapter = this;
+		private RecyclerView recyclerView;
 
-		public BookingsAdapter ()
+		public BookingsAdapter (RecyclerView rv)
 			{
-
+				this.recyclerView = rv;
 			}
 
 		public static class BookingsViewHolder extends RecyclerView.ViewHolder
@@ -54,29 +55,38 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 						card_title = v.findViewById (R.id.booking_title);
 						card_subheader = v.findViewById (R.id.booking_subheader);
 						card_content = v.findViewById (R.id.booking_content);
+
 						v.setOnClickListener (
 								(view) ->
 								{
-									Animator anim = circularReveal (v);
-
-									Booking selectedBooking = bookingsManager.bookingAt (getAdapterPosition ());
-
-									if (bookingsManager.isSelected (selectedBooking))
+									Booking booking = bookingsManager.bookingAt (getAdapterPosition ());
+									if (bookingsManager.isSelected (booking))
 										{
-											view.setBackgroundColor (view.getContext ().getResources ().getColor (R.color.colorTransparent));
-											bookingsManager.deSelect (selectedBooking);
+											bookingsManager.deSelect (booking);
+											deselect ();
 										}
 									else
 										{
-											view.setBackgroundColor (view.getContext ().getResources ().getColor (R.color.colorAccent));
-											bookingsManager.select (selectedBooking);
+											bookingsManager.select (booking);
+											select ();
 										}
+									circularReveal (v).start ();
+									v.setSelected (bookingsManager.isSelected (booking));
 									a.notifyDataSetChanged ();
-									anim.start ();
 								});
 					}
 
-				Animator circularReveal(View v)
+				private void select()
+					{
+						itemView.setBackgroundColor (itemView.getContext ().getResources ().getColor (R.color.colorAccent));
+					}
+
+				private void deselect()
+					{
+						itemView.setBackgroundColor (itemView.getContext ().getResources ().getColor (R.color.colorTransparent));
+					}
+
+				private Animator circularReveal(View v)
 					{
 						// get the center for the clipping circle
 						int centerX = v.getMeasuredWidth () / 2;
@@ -99,6 +109,10 @@ public class BookingsAdapter extends RecyclerView.Adapter <BookingsAdapter.Booki
 
 				void setTextFromElement (Booking b)
 					{
+						if (bookingsManager.isSelected (b))
+							select ();
+						else
+							deselect ();
 						card_title.setText (b.getFrom ().getCourse ().getCourseTitle ());
 						String teacherName = b.getFrom ().getName () + " " + b.getFrom ().getSurname ();
 						card_subheader.setText (teacherName);

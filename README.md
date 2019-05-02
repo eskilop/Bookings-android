@@ -3,11 +3,11 @@
 University HCI Android project 2018/2019
 
 # Screenshots
-<img src="./screenshots/bookings_1.png" style="width: 30%"/>
-<img src="./screenshots/bookings_2.png" style="width: 30%"/>
-<img src="./screenshots/bookings_3.png" style="width: 30%"/>
-<img src="./screenshots/bookings_4.png" style="width: 30%"/>
-<img src="./screenshots/bookings_5.png" style="width: 30%"/>
+<img src="./screenshots/bookings_1.png" width="30%"/>
+<img src="./screenshots/bookings_2.png" width="30%"/>
+<img src="./screenshots/bookings_3.png" width="30%"/>
+<img src="./screenshots/bookings_4.png" width="30%"/>
+<img src="./screenshots/bookings_5.png" width="30%"/>
 
 
 # License
